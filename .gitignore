@@ -1,0 +1,13 @@
+node_modules
+.next
+out
+.superpowers
+.impeccable
+apps/web/public/fixture-photos
+content/fixtures
+test-results
+playwright-report
+.lighthouseci
+originals/
+*.tsbuildinfo
+next-env.d.ts
