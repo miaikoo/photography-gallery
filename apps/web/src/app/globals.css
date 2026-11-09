@@ -1,0 +1,523 @@
+@import "tailwindcss";
+
+@theme {
+  --color-page: #ffffff;
+  --color-ink: #161615;
+  --color-muted: #5f5f5a;
+  --color-hairline: #deded9;
+  --font-display: var(--font-fraunces), Georgia, serif;
+  --font-sans: var(--font-jakarta), system-ui, sans-serif;
+}
+
+:root {
+  --gap: 12px;
+  --header: 46px;
+  --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out-strong: cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+@media (min-width: 640px) {
+  :root {
+    --gap: 24px;
+    --header: 58px;
+  }
+}
+
+html {
+  background: var(--color-page);
+  color: var(--color-ink);
+  scrollbar-color: var(--color-hairline) transparent;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+  -webkit-text-size-adjust: 100%;
+}
+
+::selection {
+  background: var(--color-ink);
+  color: var(--color-page);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 2px;
+}
+
+.font-title {
+  font-family: var(--font-display);
+  font-variation-settings: "SOFT" 100, "WONK" 1;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+.page {
+  padding-inline: var(--gap);
+  padding-bottom: var(--gap);
+}
+
+.muted-link {
+  color: var(--color-muted);
+  text-underline-offset: 3px;
+}
+
+.tag-link {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .muted-link:hover {
+    color: var(--color-ink);
+    text-decoration: underline;
+  }
+
+  .tag-link:hover {
+    color: var(--color-ink);
+  }
+}
+
+.photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-position: center;
+  background-size: cover;
+}
+
+.photo picture {
+  display: contents;
+}
+
+.photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 200ms var(--ease-out-strong);
+}
+
+.js .photo img[data-fade]:not([data-loaded]) {
+  opacity: 0;
+}
+
+.photo-rows {
+  display: grid;
+  gap: var(--gap);
+}
+
+.photo-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+
+.photo-tile {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: var(--ratio);
+  overflow: hidden;
+  container-type: inline-size;
+}
+
+.photo-tile:focus-visible {
+  outline-offset: -4px;
+  outline-color: var(--color-page);
+}
+
+@media (min-width: 640px) {
+  .photo-row {
+    flex-direction: row;
+  }
+
+  .photo-tile {
+    flex: calc(var(--ratio) * 100) 1 0;
+    width: auto;
+    min-width: 0;
+  }
+
+  .photo-row[data-short] {
+    width: min(
+      100%,
+      calc((100svh - var(--header) - var(--gap)) * var(--row-ratio) + var(--row-gaps) * var(--gap))
+    );
+  }
+}
+
+.photo-caption {
+  position: absolute;
+  inset: auto 0 0;
+  display: block;
+  padding: 80px 20px 16px;
+  color: #fff;
+  isolation: isolate;
+}
+
+/* The scrim clears only the bottom right corner, so it never hides the burned-in credit. */
+.photo-caption::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(rgb(0 0 0 / 0), rgb(0 0 0 / 0.74));
+  mask-image:
+    linear-gradient(to right, #000 calc(100% - 140px), transparent calc(100% - 60px)),
+    linear-gradient(to bottom, #000 calc(100% - 44px), transparent calc(100% - 20px));
+}
+
+.photo-caption strong {
+  display: block;
+  padding-right: 40px;
+  margin-bottom: 4px;
+  font-size: clamp(22px, 8cqw, 38px);
+  line-height: 1.04;
+}
+
+.photo-caption small {
+  display: block;
+  padding-right: 72px;
+  font-size: clamp(11px, 2.5cqw, 13px);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Tiles wipe in once as they reach the screen. Without JS nothing hides them. */
+.js .photo-tile:not([data-reveal]) {
+  clip-path: inset(100% 0 0 0);
+}
+
+.photo-tile {
+  transition: transform 160ms var(--ease-out-strong);
+}
+
+.photo-tile img {
+  transition:
+    opacity 200ms var(--ease-out-strong),
+    transform 700ms var(--ease-out-strong);
+}
+
+.photo-tile[data-reveal="in"] {
+  --delay: calc(var(--i) * 80ms);
+  animation: tile-reveal 900ms var(--ease-out-strong) var(--delay) backwards;
+}
+
+.photo-tile[data-reveal="in"] .photo {
+  animation: photo-settle 1100ms var(--ease-out-strong) var(--delay) backwards;
+}
+
+.photo-tile[data-reveal="in"] .photo-caption::before {
+  animation: fade-in 700ms var(--ease-out-strong) calc(var(--delay) + 200ms) backwards;
+}
+
+.photo-tile[data-reveal="in"] .photo-caption strong {
+  animation: rise 700ms var(--ease-out-strong) calc(var(--delay) + 280ms) backwards;
+}
+
+.photo-tile[data-reveal="in"] .photo-caption small {
+  animation: rise 700ms var(--ease-out-strong) calc(var(--delay) + 340ms) backwards;
+}
+
+.rise {
+  animation: rise 500ms var(--ease-out-strong) backwards;
+}
+
+.rise-late {
+  animation-delay: 80ms;
+}
+
+@keyframes tile-reveal {
+  from {
+    clip-path: inset(100% 0 0 0);
+  }
+  to {
+    clip-path: inset(0);
+  }
+}
+
+@keyframes photo-settle {
+  from {
+    transform: scale(1.06);
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.photo-tile:active {
+  transform: scale(0.99);
+}
+
+/* Stays small, because the credit sits close to the photo's corner. */
+@media (hover: hover) and (pointer: fine) {
+  .photo-tile:hover img {
+    transform: scale(1.02);
+  }
+}
+
+/* A photo grows from its tile into the photo page, and shrinks back. */
+::view-transition-group(.photo-morph) {
+  animation-duration: 420ms;
+  animation-timing-function: var(--ease-in-out-strong);
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 240ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .photo img,
+  .photo-tile,
+  .photo-tile img {
+    transition: none;
+  }
+
+  .photo-tile:active,
+  .photo-tile:hover img {
+    transform: none;
+  }
+
+  .photo-tile[data-reveal="in"] {
+    animation: fade-in 300ms ease backwards;
+  }
+
+  .photo-tile[data-reveal="in"] .photo,
+  .photo-tile[data-reveal="in"] .photo-caption::before,
+  .photo-tile[data-reveal="in"] .photo-caption strong,
+  .photo-tile[data-reveal="in"] .photo-caption small {
+    animation: none;
+  }
+
+  .rise {
+    animation-name: fade-in;
+  }
+
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
+/* Photo page: one column on phones, split on laptops. */
+.photo-page {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.photo-left,
+.photo-panel {
+  display: contents;
+}
+
+.photo-frame {
+  order: 1;
+  width: 100%;
+  aspect-ratio: var(--ratio);
+}
+
+.photo-gestures {
+  width: 100%;
+  height: 100%;
+  touch-action: pan-y pinch-zoom;
+}
+
+.photo-heading {
+  order: 2;
+}
+
+.exif {
+  order: 3;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px 16px;
+  padding-block: 10px;
+  border-block: 1px solid var(--color-hairline);
+  font-size: 12.5px;
+}
+
+.exif dt {
+  color: var(--color-muted);
+  font-size: 11.5px;
+}
+
+.exif dd {
+  font-variant-numeric: tabular-nums;
+}
+
+.photo-controls {
+  order: 4;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 32px;
+  font-size: 12.5px;
+}
+
+.control-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 32px;
+  cursor: pointer;
+}
+
+.photo-thumbs {
+  order: 5;
+  container-type: inline-size;
+}
+
+.photo-thumbs ul {
+  columns: 3;
+  column-gap: 6px;
+}
+
+.photo-thumbs li {
+  margin-bottom: 6px;
+  break-inside: avoid;
+}
+
+.photo-thumbs a {
+  display: block;
+}
+
+.photo-thumbs .photo,
+.photo-thumbs img {
+  height: auto;
+}
+
+.photo-thumbs a[aria-current="page"] {
+  outline: 2px solid var(--color-ink);
+  outline-offset: -2px;
+}
+
+.photo-thumbs a[aria-current="page"] .photo {
+  opacity: 0.55;
+}
+
+.photo-thumbs .photo {
+  transition: opacity 160ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .photo-thumbs a:not([aria-current="page"]):hover .photo {
+    opacity: 0.8;
+  }
+
+  .control-link:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .photo-heading a:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    text-decoration-thickness: 1px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .photo-page {
+    --available: calc(100svh - var(--header) - var(--gap));
+    --exif-row: 72px;
+    --panel-min: 240px;
+    flex-direction: row;
+    gap: var(--gap);
+    height: var(--available);
+    overflow: hidden;
+  }
+
+  .photo-left,
+  .photo-panel {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .photo-left {
+    flex: none;
+    height: 100%;
+  }
+
+  .photo-panel {
+    flex: 1 1 var(--panel-min);
+    min-width: var(--panel-min);
+    height: 100%;
+    gap: 10px;
+  }
+
+  .photo-page[data-orientation="landscape"] .photo-frame {
+    width: min(
+      calc(100vw - 3 * var(--gap) - var(--panel-min)),
+      calc((var(--available) - var(--exif-row)) * var(--ratio))
+    );
+  }
+
+  .photo-page[data-orientation="portrait"] .photo-frame {
+    width: min(calc(100vw - 3 * var(--gap) - var(--panel-min)), calc(var(--available) * var(--ratio)));
+  }
+
+  .exif[data-layout="row"] {
+    height: var(--exif-row);
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: auto;
+    justify-content: space-between;
+    align-content: center;
+    padding: 0;
+    border: 0;
+  }
+
+  .photo-thumbs {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  .photo-thumbs ul {
+    columns: 2;
+    column-gap: 8px;
+  }
+
+  .photo-thumbs li {
+    margin-bottom: 8px;
+  }
+
+  @container (min-width: 360px) {
+    .photo-thumbs ul {
+      columns: 4;
+    }
+  }
+
+  @container (min-width: 800px) {
+    .photo-thumbs ul {
+      columns: 6;
+    }
+  }
+
+  @container (min-width: 360px) {
+    .photo-thumbs[data-few] ul {
+      columns: 2;
+    }
+  }
+
+  @container (min-width: 600px) {
+    .photo-thumbs[data-few] ul {
+      columns: 3;
+    }
+  }
+}

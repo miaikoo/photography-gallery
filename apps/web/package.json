@@ -1,0 +1,43 @@
+{
+  "name": "web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "pnpm fixtures && cross-env CONTENT_SOURCE=fixtures next dev",
+    "fixtures": "node scripts/generate-fixtures.mjs",
+    "prebuild": "node scripts/prebuild.mjs",
+    "build": "next build",
+    "postbuild": "node scripts/postbuild.mjs",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "preview": "pnpm build && serve out -l 4173",
+    "test:e2e": "pnpm fixtures && cross-env CONTENT_SOURCE=fixtures pnpm build && playwright test",
+    "test:empty": "cross-env CONTENT_SOURCE=empty pnpm build && node scripts/check-empty-build.mjs",
+    "test:lighthouse": "lhci autorun --config=lighthouserc.json"
+  },
+  "dependencies": {
+    "@gallery/core": "workspace:*",
+    "next": "^16.4.5",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@lhci/cli": "^0.16.0",
+    "@playwright/test": "^1.64.1",
+    "@tailwindcss/postcss": "^4.3.4",
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "cross-env": "^10.1.0",
+    "eslint": "^10.14.0",
+    "eslint-config-next": "^16.4.5",
+    "serve": "^14.2.6",
+    "sharp": "^0.35.5",
+    "tailwindcss": "^4.3.4",
+    "typescript": "^5.9.3",
+    "vitest": "^5.1.0"
+  }
+}
