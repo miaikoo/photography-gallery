@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm test:privacy
+      - run: pnpm --filter web exec playwright install --with-deps chromium
+      - run: pnpm --filter web build
+      - run: pnpm --filter web test:e2e
+      - run: pnpm --filter web test:lighthouse
+      - run: pnpm --filter web test:empty
