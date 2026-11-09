@@ -11,3 +11,8 @@ playwright-report
 originals/
 *.tsbuildinfo
 next-env.d.ts
+apps/web/public/photos/.tmp-*
+apps/web/public/photos/.old-*
+content/events/*.tmp
+.env*
+!.env.example

@@ -1,0 +1,26 @@
+{
+  "name": "miaikoo-gallery",
+  "private": true,
+  "packageManager": "pnpm@9.12.2",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "pnpm -r --if-present test",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "lint": "pnpm -r --if-present lint",
+    "photos": "tsx packages/photos/src/cli.ts photos",
+    "test:privacy": "tsx packages/photos/src/cli.ts privacy"
+  },
+  "devDependencies": {
+    "tsx": "^4.20.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "compression": "^1.8.2",
+      "minimatch@10": "^11.0.1",
+      "basic-ftp": "^6.2.1",
+      "glob@13": "^14.0.2"
+    }
+  }
+}
